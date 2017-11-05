@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <properties>
+        <property name="server.name">my-elastic-search</property>
+    </properties>
+    <appenders>
+        <Console name="Console">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} |-%-5level [%thread] %c [%L] -| %msg%n" />
+        </Console>
+    </appenders>
+    <loggers>
+        <logger name="com.adelmo.esearch" level="Debug"/>
+    </loggers>
+</configuration>
