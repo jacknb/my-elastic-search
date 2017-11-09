@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <properties>
-        <property name="server.name">my-elastic-search</property>
+        <property name="project-name">my-elastic-search</property>
+        <property name="log-path">/home/znb/applog/${project-name}</property>
     </properties>
     <appenders>
+        <RollingFile name="RollingFile" filename="${log-path}/logging.log"
+                     filePattern="${log-path}/$${date:yyyy-MM}/logging-%d{MM-dd-yy}-i%.log.gz">
+            <PatternLayout
+                    pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [${hostname}] [${project-name}] [%-5level] [%t] %c{1} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="50M"/>
+            </Policies>
+            <DefaultRolloverStrategy max="100"/>
+        </RollingFile>
         <Console name="Console">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} |-%-5level [%thread] %c [%L] -| %msg%n" />
+            <PatternLayout
+                    pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [${hostname}] [${project-name}] [%-5level] [%t] %c{1} - %msg%n"/>
         </Console>
     </appenders>
     <loggers>
-        <logger name="com.adelmo.esearch" level="Debug"/>
+        <Root level="INFO">
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="Console"/>
+        </Root>
     </loggers>
 </configuration>
