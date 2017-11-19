@@ -9,7 +9,8 @@ import java.util.Map;
  */
 public enum ESearchEnum {
 
-    SUCCESS("1000", "成功");
+    SUCCESS("1000", "成功"),
+    PARAM_NULL("1001", "参数空异常");
     private String retCode;
     private String retMsg;
 

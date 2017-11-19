@@ -10,10 +10,19 @@ import java.util.Map;
  */
 public class ResponseInfo {
 
+    /**
+     * 返回编码
+     */
     private String retCode;
 
+    /**
+     * 返回值
+     */
     private String retMsg;
 
+    /**
+     * 返回数据
+     */
     private Map<String, Object> data;
 
     public String getRetCode() {
@@ -44,5 +53,20 @@ public class ResponseInfo {
         //默认成功
         this.retCode = ESearchEnum.SUCCESS.getRetCode();
         this.retMsg = ESearchEnum.SUCCESS.getRetMsg();
+    }
+
+    public ResponseInfo(String retCode, String retMsg, Map<String, Object> data) {
+        this.retCode = retCode;
+        this.retMsg = retMsg;
+        this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "ResponseInfo{" +
+                "retCode='" + retCode + '\'' +
+                ", retMsg='" + retMsg + '\'' +
+                ", data=" + data +
+                '}';
     }
 }

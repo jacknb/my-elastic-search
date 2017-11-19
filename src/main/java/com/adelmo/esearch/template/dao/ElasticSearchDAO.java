@@ -1,6 +1,7 @@
 package com.adelmo.esearch.template.dao;
 
 import com.adelmo.esearch.template.common.RestConfig;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,9 @@ public class ElasticSearchDAO {
         MediaType mediaType = MediaType.parseMediaType("application/json;charset=UTF-8");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(mediaType);
-        HttpEntity<String> entity = new HttpEntity<String>(data.toString(), headers);
+        JSONObject dataObject = JSONObject.parseObject(JSON.toJSONString(data));
+
+        HttpEntity<String> entity = new HttpEntity<String>(dataObject.toString(), headers);
         try {
             result = restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
             JSONObject jsonObject = (JSONObject) JSONObject.parse(result);
