@@ -1,14 +1,11 @@
 package com.adelmo.esearch.template.service;
 
-import org.springframework.stereotype.Service;
-
 import java.util.Map;
 
 /**
  * @author znb
  * @date 17-11-18.
  */
-@Service
 public interface IElasticSearchService {
 
     /**

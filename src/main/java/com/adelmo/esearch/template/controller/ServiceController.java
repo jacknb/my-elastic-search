@@ -63,4 +63,11 @@ public class ServiceController {
         return responseInfo;
     }
 
+    @RequestMapping(value = "/info", method = RequestMethod.GET)
+    public ResponseInfo queryServiceInfo(@RequestParam("projectId") String projectId) {
+        ResponseInfo responseInfo = new ResponseInfo();
+
+        return responseInfo;
+    }
+
 }
