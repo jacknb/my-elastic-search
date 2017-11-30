@@ -91,4 +91,50 @@ public class ElasticSearchDAO {
         }
         return true;
     }
+
+    /**
+     * 根据_id删除数据
+     *
+     * @param index
+     * @param type
+     * @param dataMap
+     * @return
+     */
+    public boolean deleteById(String index, String type, Map<String, Object> dataMap) {
+        boolean result = false;
+
+        String url = "http://" + restConfig.getEsCluster() + "/" + index + "/" + type + "/?pretty";
+
+        try {
+            result = restTemplate.execute(url, HttpMethod.DELETE, null, null, dataMap);
+        } catch (RestClientException e) {
+            logger.error("deleteById RestClientException.", e);
+            return false;
+        }
+
+        return result;
+    }
+
+    /**
+     * 修改数据
+     *
+     * @param index
+     * @param type
+     * @param params
+     * @return
+     */
+    public boolean updateById(String index, String type, Map<String, Object> params) {
+        boolean result = false;
+
+        String url = "http://" + restConfig.getEsCluster() + "/" + index + "/" + type + "/?pretty";
+
+        try {
+            result = restTemplate.execute(url, HttpMethod.POST, null, null, params);
+        } catch (RestClientException e) {
+            logger.error("updateById exception.", e);
+            return false;
+        }
+
+        return result;
+    }
 }
