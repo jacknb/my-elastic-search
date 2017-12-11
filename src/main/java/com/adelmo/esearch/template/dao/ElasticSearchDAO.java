@@ -97,22 +97,28 @@ public class ElasticSearchDAO {
      *
      * @param index
      * @param type
-     * @param dataMap
+     * @param id
      * @return
      */
-    public boolean deleteById(String index, String type, Map<String, Object> dataMap) {
-        boolean result = false;
-
-        String url = "http://" + restConfig.getEsCluster() + "/" + index + "/" + type + "/?pretty";
-
+    public boolean deleteById(String index, String type, String id) {
+        if (isEmpty(index, type, id)) {
+            return false;
+        }
+        boolean found;
         try {
-            result = restTemplate.execute(url, HttpMethod.DELETE, null, null, dataMap);
+            String url = "http://" + restConfig.getEsCluster() + "/" + index + "/" + type + "/" + id;
+            HttpHeaders headers = new HttpHeaders();
+            MediaType mediaType = MediaType.parseMediaType("application/json;charset=UTF-8");
+            headers.setContentType(mediaType);
+            HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+            String result = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class).getBody();
+            JSONObject resultObject = (JSONObject) JSONObject.parse(result);
+            found = resultObject.getBoolean("found");
         } catch (RestClientException e) {
             logger.error("deleteById RestClientException.", e);
             return false;
         }
-
-        return result;
+        return found;
     }
 
     /**
@@ -136,5 +142,38 @@ public class ElasticSearchDAO {
         }
 
         return result;
+    }
+
+    /**
+     * 判断参数是否为空
+     *
+     * @param index
+     * @param type
+     * @param id
+     * @return
+     */
+    private boolean isEmpty(String index, String type, String id) {
+        if (isIndexAndTypeNull(index, type)) return true;
+        if (id == null || "".equals(id)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 判断index和type是否为空
+     *
+     * @param index
+     * @param type
+     * @return
+     */
+    private boolean isIndexAndTypeNull(String index, String type) {
+        if (index == null || "".equals(index)) {
+            return true;
+        }
+        if (type == null || "".equals(type)) {
+            return true;
+        }
+        return false;
     }
 }
