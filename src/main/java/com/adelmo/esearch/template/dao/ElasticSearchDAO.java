@@ -122,25 +122,53 @@ public class ElasticSearchDAO {
     }
 
     /**
-     * 修改数据
+     * 根据id修改数据
      *
      * @param index
      * @param type
+     * @param id
      * @param params
      * @return
      */
-    public boolean updateById(String index, String type, Map<String, Object> params) {
-        boolean result = false;
-
-        String url = "http://" + restConfig.getEsCluster() + "/" + index + "/" + type + "/?pretty";
-
+    public boolean updateById(String index, String type, String id, Map<String, Object> params) {
+        if (isEmpty(index, type, id)) {
+            return false;
+        }
+        String dataJson = this.updateJSon(params);
         try {
-            result = restTemplate.execute(url, HttpMethod.POST, null, null, params);
+            String url = "http://" + restConfig.getEsCluster() + "/" + index + "/" + type + "/" + id + "/_update?pretty";
+            HttpHeaders headers = new HttpHeaders();
+            MediaType mediaType = MediaType.parseMediaType("application/json;charset=UTF-8");
+            headers.setContentType(mediaType);
+            HttpEntity<String> entity = new HttpEntity<String>(dataJson.toString(), headers);
+            String resultStr = restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
+            JSONObject resultObject = (JSONObject) JSONObject.parse(resultStr);
+            int failed = resultObject.getJSONObject("_shards").getInteger("failed");
+            if (failed > 0) {
+                return false;
+            }
         } catch (RestClientException e) {
             logger.error("updateById exception.", e);
             return false;
         }
+        return true;
+    }
 
+    /**
+     * 生成修改文档的json
+     *
+     * @param params
+     * @return
+     */
+    private String updateJSon(Map<String, Object> params) {
+        if (params == null || params.isEmpty()) {
+            return null;
+        }
+        JSONObject jsonObject = new JSONObject();
+        for (Map.Entry<String, Object> param : params.entrySet()) {
+            jsonObject.put(param.getKey(), param.getValue());
+        }
+        String result = "{\"doc\": {\n" + jsonObject.toString() + "},\"doc_as_upsert\": true}";
         return result;
     }
 
@@ -153,7 +181,9 @@ public class ElasticSearchDAO {
      * @return
      */
     private boolean isEmpty(String index, String type, String id) {
-        if (isIndexAndTypeNull(index, type)) return true;
+        if (isIndexAndTypeNull(index, type)) {
+            return true;
+        }
         if (id == null || "".equals(id)) {
             return true;
         }
